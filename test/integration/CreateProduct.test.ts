@@ -13,6 +13,7 @@ describe("CreateProduct integration tests", () => {
 
     beforeEach(() => {
         const connection = sqliteConnection.getConnection();
+        connection.exec("DELETE FROM product_inputs");
         connection.exec("DELETE FROM product_orders");
         connection.exec("DELETE FROM products");
     });

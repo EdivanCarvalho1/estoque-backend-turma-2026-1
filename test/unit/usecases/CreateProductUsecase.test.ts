@@ -53,6 +53,28 @@ describe("CreateProductUsecase tests", () => {
 
     });
 
+    test("should stop when finding a product returns an InfrastructureError", () => {
+        const databaseError = new InfrastructureError("Find failed");
+        let createCalled = false;
+
+        class ProductRepositoryMock implements ProductRepositoryInterface {
+            create(product: Product): void | InfrastructureError {
+                createCalled = true;
+                return;
+            }
+            findByBarcode(barcode: string): Product | null | InfrastructureError {
+                return databaseError;
+            }
+        }
+
+        const usecase = new CreateProductUsecase(new ProductRepositoryMock());
+
+        const result = usecase.execute("123456789", "Coca Cola 2L");
+
+        expect(result).toBe(databaseError);
+        expect(createCalled).toBe(false);
+    });
+
     test("should return an Error when the product already exists", async () => {
 
         class ProductRepositoryMock implements ProductRepositoryInterface {

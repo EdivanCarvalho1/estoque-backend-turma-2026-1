@@ -12,4 +12,10 @@ export default {
       },
     ],
   },
+  collectCoverageFrom: [
+    'src/**/*.ts',
+    '!src/index.ts',
+    '!src/controllers/CreateProductInputController.ts',
+    '!src/controllers/CreateProductInputController copy.ts',
+  ],
 };
