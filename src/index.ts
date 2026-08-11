@@ -27,7 +27,6 @@ const createProductInputUsecase = new CreateProductInputUsecase(
     productOrderRepository,
     productInputRepository,
     productRepository,
-    productOrderRepository,
 );
 
 // Instanciação de Adaptadores de Interface (Controllers)

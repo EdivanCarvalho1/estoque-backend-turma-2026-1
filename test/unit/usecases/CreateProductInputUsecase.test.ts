@@ -4,8 +4,20 @@ import { ProductOrder } from "../../../src/entities/ProductOrder";
 import { InfrastructureError } from "../../../src/InfrastructureError";
 import type { ProductInputRepositoryInterface } from "../../../src/repositories/ProductInputRepository";
 import type { ProductStockRepositoryInterface } from "../../../src/repositories/ProductRepository";
-import type { ProductOrderStatusRepositoryInterface } from "../../../src/repositories/ProductOrderRepository";
+import type { ProductOrderRepositoryInterface } from "../../../src/repositories/ProductOrderRepository";
 import { CreateProductInputUsecase } from "../../../src/usecases/CreateProductInputUsecase";
+
+abstract class ProductOrderRepositoryMockBase
+  implements ProductOrderRepositoryInterface
+{
+  create(): void {}
+
+  abstract findById(
+    id: string,
+  ): ProductOrder | null | InfrastructureError;
+
+  close(): void {}
+}
 
 describe("CreateProductInputUsecase tests", () => {
   test("should create an input for an existing product order", () => {
@@ -19,7 +31,7 @@ describe("CreateProductInputUsecase tests", () => {
     expect(order).toBeInstanceOf(ProductOrder);
     if (order instanceof Error) return;
 
-    class ProductOrderRepositoryMock {
+    class ProductOrderRepositoryMock extends ProductOrderRepositoryMockBase {
       findById(id: string): ProductOrder | null | InfrastructureError {
         return id === order.getId() ? order : null;
       }
@@ -55,7 +67,7 @@ describe("CreateProductInputUsecase tests", () => {
   });
 
   test("should return an error when the product order does not exist", () => {
-    class ProductOrderRepositoryMock {
+    class ProductOrderRepositoryMock extends ProductOrderRepositoryMockBase {
       findById(): ProductOrder | null {
         return null;
       }
@@ -78,7 +90,7 @@ describe("CreateProductInputUsecase tests", () => {
   test("should return an infrastructure error when finding the product order fails", () => {
     const databaseError = new InfrastructureError("Database error");
 
-    class ProductOrderRepositoryMock {
+    class ProductOrderRepositoryMock extends ProductOrderRepositoryMockBase {
       findById(): ProductOrder | null | InfrastructureError {
         return databaseError;
       }
@@ -109,7 +121,7 @@ describe("CreateProductInputUsecase tests", () => {
     expect(order).toBeInstanceOf(ProductOrder);
     if (order instanceof Error) return;
 
-    class ProductOrderRepositoryMock {
+    class ProductOrderRepositoryMock extends ProductOrderRepositoryMockBase {
       findById(): ProductOrder {
         return order;
       }
@@ -141,7 +153,7 @@ describe("CreateProductInputUsecase tests", () => {
     expect(order).toBeInstanceOf(ProductOrder);
     if (order instanceof Error) return;
 
-    class ProductOrderRepositoryMock {
+    class ProductOrderRepositoryMock extends ProductOrderRepositoryMockBase {
       findById(): ProductOrder {
         return order;
       }
@@ -178,7 +190,7 @@ describe("CreateProductInputUsecase tests", () => {
     );
     let createCalled = false;
 
-    class ProductOrderRepositoryMock {
+    class ProductOrderRepositoryMock extends ProductOrderRepositoryMockBase {
       findById(): ProductOrder {
         return closedOrder;
       }
@@ -210,7 +222,7 @@ describe("CreateProductInputUsecase tests", () => {
     );
     let createCalled = false;
 
-    class ProductOrderRepositoryMock {
+    class ProductOrderRepositoryMock extends ProductOrderRepositoryMockBase {
       findById(): ProductOrder {
         return order;
       }
@@ -245,9 +257,13 @@ describe("CreateProductInputUsecase tests", () => {
     const databaseError = new InfrastructureError("Database error");
     let closeCalled = false;
 
-    class ProductOrderRepositoryMock {
+    class ProductOrderRepositoryMock extends ProductOrderRepositoryMockBase {
       findById(): ProductOrder {
         return order;
+      }
+
+      close(): void {
+        closeCalled = true;
       }
     }
 
@@ -261,17 +277,10 @@ describe("CreateProductInputUsecase tests", () => {
       }
     }
 
-    class ProductOrderStatusRepositoryMock implements ProductOrderStatusRepositoryInterface {
-      close(): void {
-        closeCalled = true;
-      }
-    }
-
     const result = new CreateProductInputUsecase(
       new ProductOrderRepositoryMock(),
       new ProductInputRepositoryMock(),
       new ProductRepositoryMock(),
-      new ProductOrderStatusRepositoryMock(),
     ).execute("order-id", 20, new Date("2024-01-02T12:00:00.000Z"));
 
     expect(result).toBe(databaseError);
@@ -290,9 +299,13 @@ describe("CreateProductInputUsecase tests", () => {
     const databaseError = new InfrastructureError("Database error");
     let updatedStock = false;
 
-    class ProductOrderRepositoryMock {
+    class ProductOrderRepositoryMock extends ProductOrderRepositoryMockBase {
       findById(): ProductOrder {
         return order;
+      }
+
+      close(): InfrastructureError {
+        return databaseError;
       }
     }
 
@@ -306,17 +319,10 @@ describe("CreateProductInputUsecase tests", () => {
       }
     }
 
-    class ProductOrderStatusRepositoryMock implements ProductOrderStatusRepositoryInterface {
-      close(): InfrastructureError {
-        return databaseError;
-      }
-    }
-
     const result = new CreateProductInputUsecase(
       new ProductOrderRepositoryMock(),
       new ProductInputRepositoryMock(),
       new ProductRepositoryMock(),
-      new ProductOrderStatusRepositoryMock(),
     ).execute("order-id", 20, new Date("2024-01-02T12:00:00.000Z"));
 
     expect(result).toBe(databaseError);

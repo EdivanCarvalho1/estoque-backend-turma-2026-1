@@ -3,10 +3,7 @@ import { Product } from "../entities/Product";
 import { ProductOrder } from "../entities/ProductOrder";
 import { InfrastructureError } from "../InfrastructureError";
 import type { ProductInputRepositoryInterface } from "../repositories/ProductInputRepository";
-import type {
-  ProductOrderLookupRepositoryInterface,
-  ProductOrderStatusRepositoryInterface,
-} from "../repositories/ProductOrderRepository";
+import type { ProductOrderRepositoryInterface } from "../repositories/ProductOrderRepository";
 import type { ProductStockRepositoryInterface } from "../repositories/ProductRepository";
 
 export interface CreateProductInputDTO {
@@ -26,10 +23,9 @@ export interface CreateProductInputUsecaseInterface {
 
 export class CreateProductInputUsecase implements CreateProductInputUsecaseInterface {
   constructor(
-    private productOrderRepository: ProductOrderLookupRepositoryInterface,
+    private productOrderRepository: ProductOrderRepositoryInterface,
     private productInputRepository: ProductInputRepositoryInterface,
     private productStockRepository?: ProductStockRepositoryInterface,
-    private productOrderStatusRepository?: ProductOrderStatusRepositoryInterface,
   ) {}
 
   execute(
@@ -72,7 +68,7 @@ export class CreateProductInputUsecase implements CreateProductInputUsecaseInter
     }
 
     let resultProductOrder = productOrderResult;
-    if (this.productStockRepository && this.productOrderStatusRepository) {
+    if (this.productStockRepository) {
       const product = productOrderResult.getProduct();
       const newStock = product.getQuantityInStock() + inputQuantity;
       const updateStockResult = this.productStockRepository.updateStock(
@@ -84,7 +80,7 @@ export class CreateProductInputUsecase implements CreateProductInputUsecaseInter
         return updateStockResult;
       }
 
-      const closeResult = this.productOrderStatusRepository.close(
+      const closeResult = this.productOrderRepository.close(
         productOrderResult.getId(),
       );
       if (closeResult instanceof InfrastructureError) {

@@ -25,7 +25,6 @@ describe("CreateProductInput integration tests", () => {
       productOrderRepository,
       productInputRepository,
       productRepository,
-      productOrderRepository,
     );
     const product = Product.rebuild("1234567890123", "Biscoito Recheado", 100);
     const order = ProductOrder.create(
