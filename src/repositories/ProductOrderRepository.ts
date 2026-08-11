@@ -6,17 +6,11 @@ import type { SqliteConnection } from "./SqliteConnection";
 
 export interface ProductOrderRepositoryInterface {
     create(productOrder: ProductOrder): void | InfrastructureError;
-}
-
-export interface ProductOrderLookupRepositoryInterface {
     findById(id: string): ProductOrder | null | InfrastructureError;
-}
-
-export interface ProductOrderStatusRepositoryInterface {
     close(id: string): void | InfrastructureError;
 }
 
-export class ProductOrderRepository implements ProductOrderRepositoryInterface, ProductOrderLookupRepositoryInterface, ProductOrderStatusRepositoryInterface {
+export class ProductOrderRepository implements ProductOrderRepositoryInterface {
 
     private sqliteConnection: SqliteConnection;
 
