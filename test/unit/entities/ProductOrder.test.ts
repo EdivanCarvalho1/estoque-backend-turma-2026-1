@@ -40,6 +40,9 @@ describe("testing ProductOrder entity", () => {
     const productOrder = ProductOrder.create(product, orderQuantity, orderDate);
 
     expect(productOrder).toBeInstanceOf(Error);
+    if (productOrder instanceof Error) {
+      expect(productOrder.message).toBe("A quantidade do pedido deve ser um número inteiro.");
+    }
   });
 
   test("should return error when order quantity is not an integer", () => {
@@ -48,6 +51,9 @@ describe("testing ProductOrder entity", () => {
     const orderDate: Date = new Date();
     const productOrder = ProductOrder.create(product, orderQuantity, orderDate);
     expect(productOrder).toBeInstanceOf(Error);
+    if (productOrder instanceof Error) {
+      expect(productOrder.message).toBe("A quantidade do pedido deve ser um número inteiro.");
+    }
   });
 
   test("should return error when order date is in the future", () => {
@@ -58,6 +64,9 @@ describe("testing ProductOrder entity", () => {
     const productOrder = ProductOrder.create(product, orderQuantity, orderDate);
 
     expect(productOrder).toBeInstanceOf(Error);
+    if (productOrder instanceof Error) {
+      expect(productOrder.message).toBe("A data do pedido não pode ser no futuro.");
+    }
   });
 
   test("should return error when product is not provided", () => {
@@ -67,6 +76,9 @@ describe("testing ProductOrder entity", () => {
     const productOrder = ProductOrder.create(product, orderQuantity, orderDate);
 
     expect(productOrder).toBeInstanceOf(Error);
+    if (productOrder instanceof Error) {
+      expect(productOrder.message).toBe("O produto do pedido é obrigatório.");
+    }
   });
 
   test("should format order date correctly", () => {
@@ -81,5 +93,18 @@ describe("testing ProductOrder entity", () => {
     if (productOrder instanceof ProductOrder) {
       expect(productOrder.formatOrderDate()).toBe("2024-01-01 12:00:00Z");
     }
+  });
+
+  test("should only format a date suffix when it is at the end", () => {
+    const product = Product.rebuild("1234567890123", "Biscoito Recheado", 100);
+    const dateWithSuffix = {
+      getTime: () => 0,
+      toISOString: () => "2024-01-01T12:00:00.000Zsuffix",
+    } as unknown as Date;
+    const productOrder = ProductOrder.create(product, 10, dateWithSuffix);
+
+    expect(productOrder).toBeInstanceOf(ProductOrder);
+    if (productOrder instanceof Error) return;
+    expect(productOrder.formatOrderDate()).toBe("2024-01-01 12:00:00.000Zsuffix");
   });
 });

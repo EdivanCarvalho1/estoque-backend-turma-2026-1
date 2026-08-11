@@ -11,7 +11,7 @@ export class CreateProductController {
     }
 
     async handle(request: FastifyRequest, reply: FastifyReply): Promise<void> {
-        if(request.body === undefined || typeof request.body !== "object") {
+        if(typeof request.body !== "object") {
             reply.status(400).send({ error: "Invalid request body" });
             return;
         }

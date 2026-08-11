@@ -2,9 +2,11 @@ import fastify from "fastify";
 import { SqliteConnection } from "./repositories/SqliteConnection";
 import { ProductRepository } from "./repositories/ProductRepository";
 import { ProductOrderRepository } from "./repositories/ProductOrderRepository";
+import { ProductInputRepository } from "./repositories/ProductInputRepository";
 
 import { CreateProductUsecase } from "./usecases/CreateProductUsecase";
 import { CreateProductOrderUsecase } from "./usecases/CreateProductOrderUsecase";
+import { CreateProductInputUsecase } from "./usecases/CreateProductInputUsecase";
 
 import { CreateProductController } from "./controllers/CreateProductController";
 import { CreateProductOrderController } from "./controllers/CreateProductOrderController";
@@ -16,16 +18,21 @@ const sqliteConnection = new SqliteConnection("db/estoque.sqlite");
 // Instanciação de Repositórios aplicando inversão de dependência
 const productRepository = new ProductRepository(sqliteConnection);
 const productOrderRepository = new ProductOrderRepository(sqliteConnection);
+const productInputRepository = new ProductInputRepository(sqliteConnection);
 
 // Instanciação de Casos de Uso
 const createProductUsecase = new CreateProductUsecase(productRepository);
 const createProductOrderUsecase = new CreateProductOrderUsecase(productRepository, productOrderRepository);
+const createProductInputUsecase = new CreateProductInputUsecase(
+    productOrderRepository,
+    productInputRepository,
+    productRepository,
+);
 
 // Instanciação de Adaptadores de Interface (Controllers)
 const createProductController = new CreateProductController(createProductUsecase);
 const createProductOrderController = new CreateProductOrderController(createProductOrderUsecase);
-
-const createProductInputController = new CreateProductInputController();
+const createProductInputController = new CreateProductInputController(createProductInputUsecase);
 
 const app = fastify();
 

@@ -77,6 +77,35 @@ describe('Testing CreateProductController', () => {
 
     });
 
+    test('should return an error 400 if the body is not an object', async () => {
+        const requestMock: any = { body: 'invalid body' };
+        const responseMock: any = {
+            statusCode: 0,
+            data: null,
+            status(code: number) {
+                this.statusCode = code;
+                return this;
+            },
+            send(data: any) {
+                this.data = data;
+                return this;
+            }
+        };
+
+        class CreateProductUseCaseMock implements CreateProductUsecaseInterface {
+            execute(): CreateProductDTO | Error {
+                return new Error("This should not be called");
+            }
+        }
+
+        const controller = new CreateProductController(new CreateProductUseCaseMock());
+
+        await controller.handle(requestMock, responseMock);
+
+        expect(responseMock.statusCode).toBe(400);
+        expect(responseMock.data).toEqual({ error: "Invalid request body" });
+    });
+
     test('should return an error 500 if receive an InfrastructureError from usecase', async () => {
 
         const requestMock: any = {

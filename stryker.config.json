@@ -7,6 +7,12 @@
     "clear-text",
     "progress"
   ],
+  "mutate": [
+    "src/**/*.ts",
+    "!src/index.ts",
+    "!src/controllers/CreateProductInputController.ts",
+    "!src/controllers/CreateProductInputController copy.ts"
+  ],
   "testRunner": "jest",
   "testRunner_comment": "Take a look at https://stryker-mutator.io/docs/stryker-js/jest-runner for information about the jest plugin.",
   "coverageAnalysis": "perTest"

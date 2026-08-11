@@ -41,6 +41,16 @@ export class ProductOrder{
         );
     }
 
+    public static rebuild(
+        id: string,
+        product: Product,
+        orderQuantity: number,
+        orderDate: Date,
+        status: string,
+    ): ProductOrder {
+        return new ProductOrder(id, product, orderQuantity, orderDate, status);
+    }
+
     private static isInteger(value: number): boolean {
         return Number.isInteger(value);
     }

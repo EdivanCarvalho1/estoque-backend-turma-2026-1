@@ -4,7 +4,7 @@
 
 - Product (barcode, name, quantityInStock)
 - ProductOrder (id, Product, orderQuantity, orderDate)
-- ProductInput (id, idProductOrder, inputQuantity, inputDate)
+- ProductInput (id, ProductOrder, inputQuantity, inputDate)
 - ProductOutput (id, barcode, outputQuantity, outputDate)
 
 ## Outros campos

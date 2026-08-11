@@ -8,7 +8,11 @@ export interface ProductRepositoryInterface {
     findByBarcode(barcode: string): Product | null | InfrastructureError;
 }
 
-export class ProductRepository implements ProductRepositoryInterface {
+export interface ProductStockRepositoryInterface {
+    updateStock(barcode: string, quantityInStock: number): void | InfrastructureError;
+}
+
+export class ProductRepository implements ProductRepositoryInterface, ProductStockRepositoryInterface {
 
     private sqliteConnection: SqliteConnection;
 
@@ -41,6 +45,17 @@ export class ProductRepository implements ProductRepositoryInterface {
             } else {
                 return null;
             }
+        } catch (error) {
+            return new InfrastructureError("Database error");
+        }
+    }
+
+    public updateStock(barcode: string, quantityInStock: number): void | InfrastructureError {
+        try {
+            const connection: Database.Database = this.sqliteConnection.getConnection();
+            connection.prepare(
+                "UPDATE products SET quantity_in_stock = ? WHERE barcode = ?",
+            ).run(quantityInStock, barcode);
         } catch (error) {
             return new InfrastructureError("Database error");
         }
