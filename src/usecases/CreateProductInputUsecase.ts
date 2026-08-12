@@ -25,14 +25,10 @@ export class CreateProductInputUsecase implements CreateProductInputUsecaseInter
   constructor(
     private productOrderRepository: ProductOrderRepositoryInterface,
     private productInputRepository: ProductInputRepositoryInterface,
-    private productStockRepository?: ProductStockRepositoryInterface,
+    private productStockRepository: ProductStockRepositoryInterface,
   ) {}
 
-  execute(
-    productOrderId: string,
-    inputQuantity: number,
-    inputDate: Date,
-  ): CreateProductInputDTO | Error {
+  execute(productOrderId: string, inputQuantity: number, inputDate: Date): CreateProductInputDTO | Error {
     const productOrderResult = this.productOrderRepository.findById(productOrderId);
 
     if (productOrderResult instanceof InfrastructureError) {

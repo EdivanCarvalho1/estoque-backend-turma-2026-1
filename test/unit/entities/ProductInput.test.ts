@@ -6,17 +6,14 @@ describe("testing ProductInput entity", () => {
   test("should create an input linked to a product order with a UUID", () => {
     const product = Product.rebuild("1234567890123", "Biscoito Recheado", 100);
     const orderDate = new Date("2024-01-01T12:00:00.000Z");
-    const productOrder = ProductOrder.create(product, 20, orderDate);
+    const productOrderId = "123e4567-e89b-12d3-a456-426614174000";
+    const productOrder = ProductOrder.rebuild(productOrderId, product, 20, orderDate, "opened");
 
     expect(productOrder).toBeInstanceOf(ProductOrder);
     if (productOrder instanceof Error) return;
 
     const inputDate = new Date("2024-01-02T12:00:00.000Z");
-    const productInput = ProductInput.create(
-      productOrder as unknown as Product,
-      20,
-      inputDate,
-    );
+    const productInput = ProductInput.create(productOrder, 20, inputDate);
 
     expect(productInput).toBeInstanceOf(ProductInput);
     if (productInput instanceof Error) return;
@@ -26,6 +23,7 @@ describe("testing ProductInput entity", () => {
     );
     expect(productInput.getProductOrder()).toBe(productOrder);
     expect(productInput.getProductOrderId()).toBe(productOrder.getId());
+    expect(productInput.getProductOrder().getId()).toBe(productOrderId);
     expect(productInput.getInputQuantity()).toBe(20);
     expect(productInput.getInputDate()).toBe(inputDate);
     expect(productInput.formatInputDate()).toBe("2024-01-02 12:00:00Z");

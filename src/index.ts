@@ -11,6 +11,7 @@ import { CreateProductInputUsecase } from "./usecases/CreateProductInputUsecase"
 import { CreateProductController } from "./controllers/CreateProductController";
 import { CreateProductOrderController } from "./controllers/CreateProductOrderController";
 import { CreateProductInputController } from "./controllers/CreateProductInputController";
+import { DeleteProductInputController } from "./controllers/DeleteProductInputController";
 
 // Instanciação da infraestrutura de banco de dados
 const sqliteConnection = new SqliteConnection("db/estoque.sqlite");
@@ -34,6 +35,8 @@ const createProductController = new CreateProductController(createProductUsecase
 const createProductOrderController = new CreateProductOrderController(createProductOrderUsecase);
 const createProductInputController = new CreateProductInputController(createProductInputUsecase);
 
+const deleteProductInputController = new DeleteProductInputController();
+
 const app = fastify();
 
 // Declaração de Rotas da API
@@ -47,6 +50,10 @@ app.post("/product-orders", async (request, reply) => {
 
 app.post("/product-inputs", async (request, reply) => { 
     await createProductInputController.handle(request, reply); 
+});
+
+app.delete("/product-inputs/:productInputId", async (request, reply) => {
+    await deleteProductInputController.handle(request, reply);
 });
 
 app.listen({ port: 3000 }, (err, address) => {

@@ -3,8 +3,8 @@ POST http://localhost:3000/products HTTP/1.1
 Content-Type: application/json
 
 {
-  "barcode": "123412112",
-  "name": "Coca Cola 2L"
+  "barcode": "123456789",
+  "name": "Fanta Laranja 2L"
 }
 
 ### Criar uma Ordem de Pedido (Fanta Uva 350ml)
@@ -12,8 +12,8 @@ POST http://localhost:3000/product-orders HTTP/1.1
 Content-Type: application/json
 
 {
-  "barcode": "123412112",
-  "orderQuantity": 24,
+  "barcode": "123456789",
+  "orderQuantity": 100,
   "orderDate": "2026-05-20T09:00:00Z"
 }
 
@@ -26,3 +26,6 @@ Content-Type: application/json
   "inputQuantity": 24,
   "inputDate": "2026-05-25T19:00:00Z"
 }
+
+### Apaga uma Entrada de Pedido
+DELETE http://localhost:3000/product-inputs/01173ca0-a4e7-44cf-ab4d-9ced3290dfab HTTP/1.1
