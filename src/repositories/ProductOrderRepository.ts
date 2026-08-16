@@ -10,7 +10,11 @@ export interface ProductOrderRepositoryInterface {
     close(id: string): void | InfrastructureError;
 }
 
-export class ProductOrderRepository implements ProductOrderRepositoryInterface {
+export interface ProductOrderReopeningRepositoryInterface {
+    reopen(id: string): void | InfrastructureError;
+}
+
+export class ProductOrderRepository implements ProductOrderRepositoryInterface, ProductOrderReopeningRepositoryInterface {
 
     private sqliteConnection: SqliteConnection;
 
@@ -80,6 +84,16 @@ export class ProductOrderRepository implements ProductOrderRepositoryInterface {
                 "UPDATE product_orders SET status = ? WHERE id = ?",
             ).run("closed", id);
         } catch (error) {
+            return new InfrastructureError("Database error");
+        }
+    }
+
+    public reopen(id: string): void | InfrastructureError {
+        try {
+            this.sqliteConnection.getConnection().prepare(
+                "UPDATE product_orders SET status = ? WHERE id = ?",
+            ).run("opened", id);
+        } catch {
             return new InfrastructureError("Database error");
         }
     }

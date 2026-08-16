@@ -95,4 +95,23 @@ describe("testing ProductInput entity", () => {
     if (result instanceof Error) return;
     expect(result.formatInputDate()).toBe("2024-01-02 12:00:00.000Zsuffix");
   });
+
+  test("should calculate the lead time in days", () => {
+    const product = Product.rebuild("1234567890123", "Biscoito Recheado", 100);
+    const order = ProductOrder.rebuild(
+      "order-id",
+      product,
+      20,
+      new Date("2024-01-01T12:00:00.000Z"),
+      "closed",
+    );
+    const input = ProductInput.rebuild(
+      "input-id",
+      order,
+      20,
+      new Date("2024-01-04T00:00:00.000Z"),
+    );
+
+    expect(input.getLeadTime()).toBe(2.5);
+  });
 });

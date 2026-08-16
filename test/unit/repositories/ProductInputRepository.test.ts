@@ -72,4 +72,43 @@ describe("ProductInputRepository tests", () => {
 
     expect(result).toEqual(new InfrastructureError("Failed to create product input"));
   });
+
+  test("should find inputs by ID and product barcode and delete an input", () => {
+    const product = Product.rebuild("1234567890123", "Biscoito Recheado", 100);
+    const order = ProductOrder.rebuild(
+      "order-id", product, 20, new Date("2024-01-01T00:00:00.000Z"), "closed",
+    );
+    const input = ProductInput.rebuild(
+      "input-id", order, 20, new Date("2024-01-03T00:00:00.000Z"),
+    );
+    const productRepository = new ProductRepository(sqliteConnection);
+    const orderRepository = new ProductOrderRepository(sqliteConnection);
+    const repository = new ProductInputRepository(sqliteConnection);
+    productRepository.create(product);
+    orderRepository.create(order);
+    repository.create(input);
+
+    const found = repository.findById("input-id");
+    expect(found).toBeInstanceOf(ProductInput);
+    expect((found as ProductInput).getLeadTime()).toBe(2);
+    expect(repository.findById("missing-id")).toBeNull();
+
+    const productInputs = repository.findAllByProductBarcode("1234567890123");
+    expect(productInputs).toHaveLength(1);
+    expect((productInputs as ProductInput[])[0]?.getId()).toBe("input-id");
+    expect(repository.findAllByProductBarcode("missing-barcode")).toEqual([]);
+
+    expect(repository.delete("input-id")).toBeUndefined();
+    expect(repository.findById("input-id")).toBeNull();
+  });
+
+  test("should return infrastructure errors for new repository operations", () => {
+    const repository = new ProductInputRepository({
+      getConnection: () => ({ prepare: () => { throw new Error("database unavailable"); } }),
+    } as any);
+
+    expect(repository.findById("id")).toEqual(new InfrastructureError("Failed to find product input"));
+    expect(repository.findAllByProductBarcode("123")).toEqual(new InfrastructureError("Failed to find product inputs"));
+    expect(repository.delete("id")).toEqual(new InfrastructureError("Failed to delete product input"));
+  });
 });
