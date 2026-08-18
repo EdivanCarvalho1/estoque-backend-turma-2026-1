@@ -15,7 +15,4 @@ export class LeadTimeService {
     return total / productInputs.length;
   }
 
-  public GetLeadTimeAvg(barcode: string): number | Error {
-    return this.getLeadTimeAvg(barcode);
-  }
 }

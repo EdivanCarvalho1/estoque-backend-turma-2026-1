@@ -47,7 +47,7 @@ describe("LeadTimeService", () => {
     const repository: ProductInputLeadTimeRepositoryInterface = {
       findAllByProductBarcode: () => [],
     };
-    expect(new LeadTimeService(repository).GetLeadTimeAvg("123")).toEqual(
+    expect(new LeadTimeService(repository).getLeadTimeAvg("123")).toEqual(
       new Error("Product has no inputs"),
     );
   });
