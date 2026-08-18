@@ -1,6 +1,7 @@
 import { ProductOrder } from "./ProductOrder";
 
 export class ProductInput {
+  private static readonly MILLISECONDS_PER_DAY = 1000 * 60 * 60 * 24;
 
   private constructor(
     private id: string,
@@ -34,6 +35,10 @@ export class ProductInput {
     );
   }
 
+  public static rebuild(id: string, productOrder: ProductOrder, inputQuantity: number, inputDate: Date): ProductInput {
+    return new ProductInput(id, productOrder, inputQuantity, inputDate);
+  }
+
   public getId(): string {
     return this.id;
   }
@@ -52,6 +57,11 @@ export class ProductInput {
 
   public getInputDate(): Date {
     return this.inputDate;
+  }
+
+  public getLeadTime(): number {
+    return (this.inputDate.getTime() - this.productOrder.getOrderDate().getTime())
+      / ProductInput.MILLISECONDS_PER_DAY;
   }
 
   public formatInputDate(): string {

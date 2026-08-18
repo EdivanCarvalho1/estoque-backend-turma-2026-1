@@ -23,17 +23,10 @@ export interface CreateProductOrderUsecaseInterface {
 }
 
 export class CreateProductOrderUsecase implements CreateProductOrderUsecaseInterface {
-
-    private productRepository: ProductRepositoryInterface;
-    private productOrderRepository: ProductOrderRepositoryInterface;
-
     constructor(
-        productRepository: ProductRepositoryInterface,
-        productOrderRepository: ProductOrderRepositoryInterface
-    ) {
-        this.productRepository = productRepository;
-        this.productOrderRepository = productOrderRepository;
-    }
+        private readonly productRepository: ProductRepositoryInterface,
+        private readonly productOrderRepository: ProductOrderRepositoryInterface,
+    ) {}
 
     execute(barcode: string, orderQuantity: number, orderDate: Date): CreateProductOrderDTO | Error {
         const product = this.productRepository.findByBarcode(barcode);
@@ -54,16 +47,21 @@ export class CreateProductOrderUsecase implements CreateProductOrderUsecaseInter
             return createResult;
         }
 
+        return this.toDTO(productOrder);
+    }
+
+    private toDTO(productOrder: ProductOrder): CreateProductOrderDTO {
+        const product = productOrder.getProduct();
         return {
             id: productOrder.getId(),
             product: {
-                barcode: productOrder.getProduct().getBarcode(),
-                name: productOrder.getProduct().getName(),
-                quantityInStock: productOrder.getProduct().getQuantityInStock()
+                barcode: product.getBarcode(),
+                name: product.getName(),
+                quantityInStock: product.getQuantityInStock(),
             },
             orderQuantity: productOrder.getOrderQuantity(),
             orderDate: productOrder.getOrderDate(),
-            status: productOrder.getStatus()
+            status: productOrder.getStatus(),
         };
     }
 }

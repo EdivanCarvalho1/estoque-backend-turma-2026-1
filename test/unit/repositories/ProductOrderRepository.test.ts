@@ -121,4 +121,27 @@ describe("ProductOrderRepository tests", () => {
       new InfrastructureError("Database error"),
     );
   });
+
+  test("should reopen a closed product order", () => {
+    const product = Product.rebuild("1234567890123", "Biscoito Recheado", 100);
+    const productRepository = new ProductRepository(sqliteConnection);
+    const repository = new ProductOrderRepository(sqliteConnection);
+    productRepository.create(product);
+    const order = ProductOrder.rebuild(
+      "order-id", product, 20, new Date("2024-01-01T12:00:00.000Z"), "closed",
+    );
+    repository.create(order);
+
+    expect(repository.reopen(order.getId())).toBeUndefined();
+    const result = repository.findById(order.getId());
+    expect(result).toBeInstanceOf(ProductOrder);
+    expect((result as ProductOrder).getStatus()).toBe("opened");
+  });
+
+  test("should return an infrastructure error when reopening an order fails", () => {
+    const repository = new ProductOrderRepository({
+      getConnection: () => ({ prepare: () => { throw new Error("database unavailable"); } }),
+    } as any);
+    expect(repository.reopen("order-id")).toEqual(new InfrastructureError("Database error"));
+  });
 });

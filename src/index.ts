@@ -7,6 +7,7 @@ import { ProductInputRepository } from "./repositories/ProductInputRepository";
 import { CreateProductUsecase } from "./usecases/CreateProductUsecase";
 import { CreateProductOrderUsecase } from "./usecases/CreateProductOrderUsecase";
 import { CreateProductInputUsecase } from "./usecases/CreateProductInputUsecase";
+import { DeleteProductInputUsecase } from "./usecases/DeleteProductInputUsecase";
 
 import { CreateProductController } from "./controllers/CreateProductController";
 import { CreateProductOrderController } from "./controllers/CreateProductOrderController";
@@ -29,13 +30,18 @@ const createProductInputUsecase = new CreateProductInputUsecase(
     productInputRepository,
     productRepository,
 );
+const deleteProductInputUsecase = new DeleteProductInputUsecase(
+    productInputRepository,
+    productOrderRepository,
+    productRepository,
+);
 
 // Instanciação de Adaptadores de Interface (Controllers)
 const createProductController = new CreateProductController(createProductUsecase);
 const createProductOrderController = new CreateProductOrderController(createProductOrderUsecase);
 const createProductInputController = new CreateProductInputController(createProductInputUsecase);
 
-const deleteProductInputController = new DeleteProductInputController();
+const deleteProductInputController = new DeleteProductInputController(deleteProductInputUsecase);
 
 const app = fastify();
 
