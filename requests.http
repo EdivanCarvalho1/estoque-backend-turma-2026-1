@@ -7,6 +7,13 @@ Content-Type: application/json
   "name": "Fanta Laranja 2L"
 }
 
+### Listar todos os Produtos
+GET http://localhost:3000/products HTTP/1.1
+
+
+### Listar um Produto específico
+GET http://localhost:3000/products/123412112 HTTP/1.1
+
 ### Criar uma Ordem de Pedido (Fanta Uva 350ml)
 POST http://localhost:3000/product-orders HTTP/1.1
 Content-Type: application/json
@@ -29,3 +36,14 @@ Content-Type: application/json
 
 ### Apaga uma Entrada de Pedido
 DELETE http://localhost:3000/product-inputs/01173ca0-a4e7-44cf-ab4d-9ced3290dfab HTTP/1.1
+
+
+### Criar uma Saída de Produto (Fanta Uva 350ml)
+POST http://localhost:3000/product-outputs HTTP/1.1
+Content-Type: application/json
+
+{
+  "barcode": "123412112",
+  "quantity": 2,
+  "outputDate": "2026-05-25T19:00:00Z"
+}

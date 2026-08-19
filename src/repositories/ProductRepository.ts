@@ -6,6 +6,8 @@ import type { SqliteConnection } from "./SqliteConnection";
 export interface ProductRepositoryInterface {
     create(product: Product): void | InfrastructureError;
     findByBarcode(barcode: string): Product | null | InfrastructureError;
+    updateStock(barcode: string, quantityInStock: number): void | InfrastructureError;
+    findAll(): Product[] | InfrastructureError;
 }
 
 export interface ProductStockRepositoryInterface {
@@ -56,6 +58,19 @@ export class ProductRepository implements ProductRepositoryInterface, ProductSto
             connection.prepare(
                 "UPDATE products SET quantity_in_stock = ? WHERE barcode = ?",
             ).run(quantityInStock, barcode);
+        } catch (error) {
+            return new InfrastructureError("Database error");
+        }
+    }
+
+    public findAll(): Product[] | InfrastructureError {
+        try {
+            const connection: Database.Database = this.sqliteConnection.getConnection();
+            const selectStatement = connection.prepare(
+                "SELECT * FROM products"
+            );
+            const rows = selectStatement.all() as { barcode: string; name: string; quantity_in_stock: number }[];
+            return rows.map(row => Product.rebuild(row.barcode, row.name, row.quantity_in_stock));
         } catch (error) {
             return new InfrastructureError("Database error");
         }

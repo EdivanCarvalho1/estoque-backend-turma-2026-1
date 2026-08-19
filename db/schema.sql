@@ -20,3 +20,11 @@ CREATE TABLE product_inputs (
     input_date TEXT NOT NULL,
     FOREIGN KEY (product_order_id) REFERENCES product_orders(id)
 );
+
+CREATE TABLE product_outputs (
+    id TEXT PRIMARY KEY,
+    product_id TEXT NOT NULL,
+    quantity INTEGER NOT NULL,
+    output_date TEXT NOT NULL,
+    FOREIGN KEY (product_id) REFERENCES products(barcode)
+);
